@@ -1,6 +1,6 @@
 package com.example.expensesharing.dtos;
 
-public enum ResponseType {
+public enum ResponseStatus {
     FAILURE,
     SUCCESS
 }

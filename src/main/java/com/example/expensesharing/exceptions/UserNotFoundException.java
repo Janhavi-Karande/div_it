@@ -1,4 +1,10 @@
 package com.example.expensesharing.exceptions;
 
-public class UserNotFoundExecption {
+public class UserNotFoundException extends Exception {
+    public UserNotFoundException() {
+
+    }
+    public UserNotFoundException(String message) {
+        super(message);
+    }
 }
