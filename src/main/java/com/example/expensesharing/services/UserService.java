@@ -171,7 +171,6 @@ public class UserService {
 
     public User getUser(String createdByUserEmail) throws UserNotFoundException {
         Optional<User> optionalUser = userRepository.findByEmail(createdByUserEmail);
-        System.out.println("Optional user: " + optionalUser);
 
         if(optionalUser.isEmpty()) {
             throw new UserNotFoundException("User with " +createdByUserEmail+ " does not exists!");
@@ -179,6 +178,5 @@ public class UserService {
 
         User user = optionalUser.get();
         return user;
-
     }
 }

@@ -4,6 +4,7 @@ import com.example.expensesharing.controllers.ExpenseController;
 import com.example.expensesharing.controllers.GroupController;
 import com.example.expensesharing.controllers.UserController;
 import com.example.expensesharing.dtos.*;
+import com.example.expensesharing.models.Expense;
 import com.example.expensesharing.models.ExpenseType;
 import com.example.expensesharing.models.User;
 import com.example.expensesharing.models.UserExpenseType;
@@ -130,16 +131,16 @@ class ExpenseSharingApplicationTests {
 	void testCreateExpense(){
 		CreateExpenseRequestDto createExpenseRequestDto = new CreateExpenseRequestDto();
 
-		createExpenseRequestDto.setName("Grocery");
-		createExpenseRequestDto.setDescription("Grocery expense");
-		createExpenseRequestDto.setCreatedByUserEmail("meerajoshi@gmail.com");
+		createExpenseRequestDto.setName("Rent");
+		createExpenseRequestDto.setDescription("Rent expense");
+		createExpenseRequestDto.setCreatedByUserEmail("parthvyas24@gmail.com");
 		createExpenseRequestDto.setGroupName("Roommates");
-		createExpenseRequestDto.setTotalAmount(600.0);
+		createExpenseRequestDto.setTotalAmount(9000.0);
 
 		List<UserExpenseHelper> helpers = new ArrayList<>();
-		UserExpenseHelper helperMeera = new UserExpenseHelper("meerajoshi@gmail.com", UserExpenseType.PAID_BY, 600.0);
-		UserExpenseHelper helperRohini = new UserExpenseHelper("rohinipillai@gmail.com", UserExpenseType.HAD_TO_PAY, 200.0);
-		UserExpenseHelper helperParth = new UserExpenseHelper("parthvyas24@gmail.com", UserExpenseType.HAD_TO_PAY, 200.0);
+		UserExpenseHelper helperMeera = new UserExpenseHelper("meerajoshi@gmail.com", UserExpenseType.HAD_TO_PAY, 3000.0);
+		UserExpenseHelper helperRohini = new UserExpenseHelper("rohinipillai@gmail.com", UserExpenseType.PAID_BY, 6000.0);
+		UserExpenseHelper helperParth = new UserExpenseHelper("parthvyas24@gmail.com", UserExpenseType.HAD_TO_PAY, 3000.0);
 
 		helpers.add(helperMeera);
 		helpers.add(helperRohini);
@@ -150,10 +151,34 @@ class ExpenseSharingApplicationTests {
 		CreateExpenseResponseDto createExpenseResponseDto = expenseController.createExpense(createExpenseRequestDto);
 
 		if(createExpenseResponseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
-			System.out.println("Expense is created successfully." + createExpenseResponseDto.getExpense());
+			System.out.println("Expense is created successfully. " + createExpenseResponseDto.getExpense().getName());
 		}
 		else{
 			System.out.println("Expense is not created.");
+		}
+	}
+
+	@Test
+	void testSettleUp(){
+		SettleUpGroupRequestDto settleUpGroupRequestDto = new SettleUpGroupRequestDto();
+		settleUpGroupRequestDto.setGroupId(1);
+		settleUpGroupRequestDto.setUserId(4);
+
+		// 2 - Meera
+		// 4- Parth
+		// 5 - Rohini
+		SettleUpGroupResponseDto settleUpGroupResponseDto = expenseController.settleUp(settleUpGroupRequestDto);
+
+		if(settleUpGroupResponseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			System.out.println("Settle up is successful. ");
+			for(Expense expense: settleUpGroupResponseDto.getSettledExpenses()){
+				System.out.println(expense.getDescription()+ " ");
+			}
+
+		}
+		else{
+			System.out.println("Settle up is failed.");
+
 		}
 	}
 }

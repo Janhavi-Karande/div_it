@@ -52,6 +52,7 @@ public class GroupService {
             membersList.add(optionalMember.get());
         }
 
+        membersList.add(admin);
         group.setName(name);
         group.setDescription(description);
         group.setMembers(membersList);

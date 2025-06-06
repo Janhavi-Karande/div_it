@@ -1,11 +1,11 @@
 package com.example.expensesharing.controllers;
 
-import com.example.expensesharing.dtos.CreateExpenseRequestDto;
-import com.example.expensesharing.dtos.CreateExpenseResponseDto;
-import com.example.expensesharing.dtos.ResponseStatus;
+import com.example.expensesharing.dtos.*;
 import com.example.expensesharing.models.Expense;
 import com.example.expensesharing.services.ExpenseService;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Controller
 public class ExpenseController {
@@ -32,5 +32,22 @@ public class ExpenseController {
         }
 
         return createExpenseResponseDto;
+    }
+
+    public SettleUpGroupResponseDto settleUp(SettleUpGroupRequestDto settleUpGroupRequestDto) {
+        SettleUpGroupResponseDto settleUpResponseDto = new SettleUpGroupResponseDto();
+
+        try{
+            List<Expense> expenses = expenseService.settleUp(settleUpGroupRequestDto.getGroupId(),
+                    settleUpGroupRequestDto.getUserId());
+
+            settleUpResponseDto.setSettledExpenses(expenses);
+            settleUpResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        } catch (Exception e) {
+            e.printStackTrace();
+            settleUpResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return settleUpResponseDto;
     }
 }
