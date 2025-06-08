@@ -1,12 +1,10 @@
 package com.example.expensesharing.dtos;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class SettleUpGroupRequestDto {
+public class TransactionsInGroupRequestDto {
     private String groupName;
-    private Integer userId;
 }

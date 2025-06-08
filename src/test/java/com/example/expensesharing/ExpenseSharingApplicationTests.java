@@ -161,7 +161,7 @@ class ExpenseSharingApplicationTests {
 	@Test
 	void testSettleUp(){
 		SettleUpGroupRequestDto settleUpGroupRequestDto = new SettleUpGroupRequestDto();
-		settleUpGroupRequestDto.setGroupId(1);
+		settleUpGroupRequestDto.setGroupName("Roommates");
 		settleUpGroupRequestDto.setUserId(4);
 
 		// 2 - Meera
@@ -179,6 +179,47 @@ class ExpenseSharingApplicationTests {
 		else{
 			System.out.println("Settle up is failed.");
 
+		}
+	}
+
+	@Test
+	void testGetAllTransactions(){
+		TransactionsInGroupRequestDto transactionsInGroupRequestDto = new TransactionsInGroupRequestDto();
+		transactionsInGroupRequestDto.setGroupName("Roommates");
+
+		TransactionsInGroupResponseDto transactionsInGroupResponseDto = expenseController.getAllTransactions(transactionsInGroupRequestDto);
+
+		if(transactionsInGroupResponseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			System.out.println("All transactions is successful.");
+			for(Expense expense: transactionsInGroupResponseDto.getExpenses())
+				System.out.println(expense.getDescription()+ " ");
+		}
+		else{
+			System.out.println("All transactions is not successful.");
+		}
+	}
+
+	@Test
+	void testGetExpenseHistory(){
+		ExpenseHistoryRequestDto expenseHistoryRequestDto = new ExpenseHistoryRequestDto();
+		expenseHistoryRequestDto.setGroupName("Roommates");
+
+		ExpenseHistoryResponseDto expenseHistoryResponseDto = expenseController.getExpenseHistory(expenseHistoryRequestDto);
+
+		if(expenseHistoryResponseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			System.out.println("Expense history is successful.");
+			for(Expense expense: expenseHistoryResponseDto.getExpenses()){
+				if(expense.getExpenseType().equals(ExpenseType.REAL)){
+					System.out.println(expense.getName()+ " - Not settle" );
+				}
+				else if (expense.getExpenseType().equals(ExpenseType.SETTLED)) {
+					System.out.println(expense.getName()+ " - Settled" );
+
+				}
+			}
+		}
+		else{
+			System.out.println("Expense history is not successful.");
 		}
 	}
 }

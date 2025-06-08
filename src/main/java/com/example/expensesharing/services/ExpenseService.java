@@ -101,15 +101,10 @@ public class ExpenseService {
     }
 
     @Transactional
-    public List<Expense> settleUp(Integer groupId, Integer userId) throws GroupNotFoundException, UserNotFoundException, InvalidGroupMemberException {
+    public List<Expense> settleUp(String groupName, Integer userId) throws GroupNotFoundException, UserNotFoundException, InvalidGroupMemberException {
 
         // get the group object
-        Optional<Group> optionalGroup = groupRepository.findById(groupId);
-        if(optionalGroup.isEmpty()){
-            throw new GroupNotFoundException("Group with id " +groupId+ " does not exists!");
-        }
-
-        Group group = optionalGroup.get();
+        Group group = groupService.getGroup(groupName);
 
         // check if user exists
         Optional<User> optionalUser = userRepository.findById(userId);
@@ -148,5 +143,33 @@ public class ExpenseService {
 
         groupRepository.save(group);
         return expenses;
+    }
+
+    @Transactional
+    public List<Expense> getAllTransactions(String groupName) throws GroupNotFoundException {
+
+        Group group = groupService.getGroup(groupName);
+
+        List<Expense> expenseList = group.getExpenses();
+
+        expenseList = expenseList.stream().
+                filter(e -> e.getExpenseType() == ExpenseType.DUMMY).
+                collect(Collectors.toList());
+
+        return expenseList;
+    }
+
+    @Transactional
+    public List<Expense> getExpenseHistory(String groupName) throws GroupNotFoundException {
+
+        // get the group object
+        Group group = groupService.getGroup(groupName);
+
+        List<Expense> expenseList = group.getExpenses();
+        expenseList = expenseList.stream().
+                filter(e -> e.getExpenseType() == ExpenseType.REAL || e.getExpenseType() == ExpenseType.SETTLED).
+                collect(Collectors.toList());
+
+        return expenseList;
     }
 }

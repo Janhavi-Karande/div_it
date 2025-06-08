@@ -38,7 +38,7 @@ public class ExpenseController {
         SettleUpGroupResponseDto settleUpResponseDto = new SettleUpGroupResponseDto();
 
         try{
-            List<Expense> expenses = expenseService.settleUp(settleUpGroupRequestDto.getGroupId(),
+            List<Expense> expenses = expenseService.settleUp(settleUpGroupRequestDto.getGroupName(),
                     settleUpGroupRequestDto.getUserId());
 
             settleUpResponseDto.setSettledExpenses(expenses);
@@ -49,5 +49,41 @@ public class ExpenseController {
         }
 
         return settleUpResponseDto;
+    }
+
+    public TransactionsInGroupResponseDto getAllTransactions(TransactionsInGroupRequestDto transactionsInGroupRequestDto) {
+        TransactionsInGroupResponseDto transactionsInGroupResponseDto = new TransactionsInGroupResponseDto();
+
+        try{
+            List<Expense> settledExpenses = expenseService.getAllTransactions(transactionsInGroupRequestDto.getGroupName());
+
+            transactionsInGroupResponseDto.setExpenses(settledExpenses);
+            transactionsInGroupResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            transactionsInGroupResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return transactionsInGroupResponseDto;
+    }
+
+    public ExpenseHistoryResponseDto getExpenseHistory(ExpenseHistoryRequestDto expenseHistoryRequestDto) {
+
+        ExpenseHistoryResponseDto expenseHistoryResponseDto = new ExpenseHistoryResponseDto();
+
+        try{
+            List<Expense> expenses = expenseService.getExpenseHistory(expenseHistoryRequestDto.getGroupName());
+
+            expenseHistoryResponseDto.setExpenses(expenses);
+            expenseHistoryResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            expenseHistoryResponseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return expenseHistoryResponseDto;
+
     }
 }
