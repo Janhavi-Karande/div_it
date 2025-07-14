@@ -3,6 +3,7 @@ package com.example.expensesharing.services;
 import com.example.expensesharing.dtos.UserExpenseHelper;
 import com.example.expensesharing.exceptions.GroupNotFoundException;
 import com.example.expensesharing.exceptions.InvalidGroupMemberException;
+import com.example.expensesharing.exceptions.InvalidRequestException;
 import com.example.expensesharing.exceptions.UserNotFoundException;
 import com.example.expensesharing.models.*;
 import com.example.expensesharing.repositories.ExpenseRepository;
@@ -160,10 +161,23 @@ public class ExpenseService {
     }
 
     @Transactional
-    public List<Expense> getExpenseHistory(String groupName) throws GroupNotFoundException {
-
+    public List<Expense> getExpenseHistory( String userEmail, String groupName) throws GroupNotFoundException, UserNotFoundException, InvalidRequestException {
         // get the group object
         Group group = groupService.getGroup(groupName);
+
+        //check if user is a member of group
+        User user = userService.getUser(userEmail);
+        boolean flag = false;
+
+        for(User u : group.getMembers()) {
+            if(u.getEmail().equals(userEmail)) {
+                flag = true;
+            }
+        }
+
+        if(flag == false) {
+            throw new InvalidRequestException("User with email "+userEmail+ " is not member of " +groupName);
+        }
 
         List<Expense> expenseList = group.getExpenses();
         expenseList = expenseList.stream().

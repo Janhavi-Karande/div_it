@@ -1,11 +1,12 @@
 package com.example.expensesharing.controllers;
 
-import com.example.expensesharing.dtos.CreateGroupRequestDto;
-import com.example.expensesharing.dtos.CreateGroupResponseDto;
-import com.example.expensesharing.dtos.ResponseStatus;
+import com.example.expensesharing.dtos.*;
 import com.example.expensesharing.models.Group;
+import com.example.expensesharing.models.User;
 import com.example.expensesharing.services.GroupService;
 import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Controller
 public class GroupController {
@@ -21,7 +22,7 @@ public class GroupController {
 
         try{
             Group group = groupService.createGroup(createGroupRequestDto.getGroupName(), createGroupRequestDto.getDescription(),
-                    createGroupRequestDto.getMembers(), createGroupRequestDto.getAdmin());
+                    createGroupRequestDto.getAdminEmail());
 
             createGroupResponseDto.setGroup(group);
             createGroupResponseDto.setResponseStatus(ResponseStatus.SUCCESS);
@@ -32,5 +33,76 @@ public class GroupController {
 
         }
         return createGroupResponseDto;
+    }
+
+    public AddRemoveMemberGroupResponseDto addMember(AddRemoveMemberGroupRequestDto addRemoveMemberGroupRequestDto) {
+        AddRemoveMemberGroupResponseDto responseDto = new AddRemoveMemberGroupResponseDto();
+
+        try{
+            List<User> members = groupService.addMember(addRemoveMemberGroupRequestDto.getAdminEmail(),
+                    addRemoveMemberGroupRequestDto.getUserEmail(),
+                    addRemoveMemberGroupRequestDto.getGroupName());
+
+            responseDto.setMembers(members);
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return responseDto;
+    }
+
+    public AddRemoveMemberGroupResponseDto removeMember(AddRemoveMemberGroupRequestDto addRemoveMemberGroupRequestDto) {
+        AddRemoveMemberGroupResponseDto responseDto = new AddRemoveMemberGroupResponseDto();
+
+        try{
+            List<User> members = groupService.removeMember(addRemoveMemberGroupRequestDto.getAdminEmail(),
+                    addRemoveMemberGroupRequestDto.getUserEmail(),
+                    addRemoveMemberGroupRequestDto.getGroupName());
+
+            responseDto.setMembers(members);
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return responseDto;
+    }
+
+    public AddRemoveMemberGroupResponseDto getAllMembers(AddRemoveMemberGroupRequestDto getMembersRequestDto) {
+
+        AddRemoveMemberGroupResponseDto responseDto = new AddRemoveMemberGroupResponseDto();
+
+        try{
+            List<User> members = groupService.getAllMembers(getMembersRequestDto.getGroupName());
+            responseDto.setMembers(members);
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return responseDto;
+    }
+
+    public GetGroupsResponseDto getAllGroups(GetGroupsRequestDto getGroupsRequestDto) {
+        GetGroupsResponseDto responseDto = new GetGroupsResponseDto();
+
+        try{
+            List<Group> groups = groupService.getAllGroups(getGroupsRequestDto.getUserEmail());
+            responseDto.setGroups(groups);
+            responseDto.setResponseStatus(ResponseStatus.SUCCESS);
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
+            responseDto.setResponseStatus(ResponseStatus.FAILURE);
+        }
+
+        return responseDto;
     }
 }

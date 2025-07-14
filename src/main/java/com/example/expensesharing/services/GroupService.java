@@ -1,12 +1,14 @@
 package com.example.expensesharing.services;
 
 import com.example.expensesharing.exceptions.GroupNotFoundException;
+import com.example.expensesharing.exceptions.InvalidRequestException;
 import com.example.expensesharing.exceptions.UserNotFoundException;
 import com.example.expensesharing.models.Group;
 import com.example.expensesharing.models.User;
 import com.example.expensesharing.repositories.GroupRepository;
 import com.example.expensesharing.repositories.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +16,15 @@ import java.util.Optional;
 
 @Service
 public class GroupService {
+    private final UserService userService;
     private GroupRepository groupRepository;
-    private UserRepository userRepository;
 
-    public GroupService(GroupRepository groupRepository, UserRepository userRepository) {
+    public GroupService(GroupRepository groupRepository, UserService userService) {
         this.groupRepository = groupRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
-    public Group createGroup(String name, String description, List<User> members, User admin) throws UserNotFoundException {
+    public Group createGroup(String name, String description, String adminEmail) throws UserNotFoundException {
         Group group = new Group();
 
         // check if group with same name already exists
@@ -32,43 +34,91 @@ public class GroupService {
             System.out.println("Group with name" +optionalGroup.get().getName()+ " already exists");
         }
 
-        // check if given user exists
-        Optional<User> optionalUserAdmin = userRepository.findByEmail(admin.getEmail());
-        if(optionalUserAdmin.isEmpty()){
-            throw  new UserNotFoundException("User with email " +admin.getEmail()+ " does not exits");
-        }
+        // check if given user(admin) exists
+       User admin = userService.getUser(adminEmail);
 
-        // check if all the members are users
-        int membersCount = members.size();
         List<User> membersList = new ArrayList<>();
-
-        for(int i=0; i<membersCount; i++){
-            Optional<User> optionalMember = userRepository.findByEmail(members.get(i).getEmail());
-
-            if(optionalMember.isEmpty()){
-                throw  new UserNotFoundException("User with email " +members.get(i).getEmail()+ " does not exits \n Select members who are users.");
-            }
-
-            membersList.add(optionalMember.get());
-        }
 
         membersList.add(admin);
         group.setName(name);
         group.setDescription(description);
         group.setMembers(membersList);
-        group.setAdmin(optionalUserAdmin.get());
+        group.setAdmin(admin);
 
         return groupRepository.save(group);
     }
 
     public Group getGroup(String groupName) throws GroupNotFoundException {
+
+        Optional<Group> optionalGroup = groupRepository.findByName(groupName);
+        if(optionalGroup.isEmpty()){
+            throw new GroupNotFoundException("Group with group name " +groupName+ " does not exists.");
+        }
+
+        return optionalGroup.get();
+    }
+
+    @Transactional
+    public List<User> addMember(String adminEmail, String userEmail, String groupName) throws UserNotFoundException, GroupNotFoundException {
+
+        User admin = userService.getUser(adminEmail);
+        User user = userService.getUser(userEmail);
+
+        Group group = getGroup(groupName);
+
+        List<User> members = group.getMembers();
+
+        if(!group.getAdmin().getEmail().equals(admin.getEmail())){
+            throw new UserNotFoundException("User with email " +admin.getEmail()+ " is not admin.");
+        }
+
+        members.add(user);
+
+        groupRepository.save(group);
+        return members;
+
+    }
+
+    @Transactional
+    public List<User> removeMember(String adminEmail, String userEmail, String groupName) throws UserNotFoundException, GroupNotFoundException, InvalidRequestException {
+
+        User user = userService.getUser(userEmail);
+        Group group = getGroup(groupName);
+        User admin = userService.getUser(adminEmail);
+
+        List<User> members = group.getMembers();
+
+        if(!group.getAdmin().getEmail().equals(admin.getEmail())){
+            throw new UserNotFoundException("User with email " +admin.getEmail()+ " is not admin.");
+        }
+
+
+       if(userEmail.equals(admin.getEmail())){
+           throw new InvalidRequestException("Admin can't be removed from a group.");
+       }
+        members.remove(user);
+
+        groupRepository.save(group);
+        return members;
+    }
+
+     // TO-DO: get all members of a group
+
+    @Transactional
+    public List<User> getAllMembers(String groupName) throws GroupNotFoundException {
+
         Optional<Group> optionalGroup = groupRepository.findByName(groupName);
         if(optionalGroup.isEmpty()){
             throw new GroupNotFoundException("Group with group name " +groupName+ " does not exists.");
         }
 
         Group group = optionalGroup.get();
-        return group;
+        return group.getMembers();
     }
 
+    @Transactional
+    public List<Group> getAllGroups(String userEmail){
+        List<Group> groups = groupRepository.findAllByMemberEmail(userEmail);
+        return groups;
+    }
 }

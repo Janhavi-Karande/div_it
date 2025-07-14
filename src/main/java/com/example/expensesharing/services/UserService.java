@@ -1,23 +1,29 @@
 package com.example.expensesharing.services;
 
 import com.example.expensesharing.exceptions.UserNotFoundException;
+import com.example.expensesharing.models.Group;
 import com.example.expensesharing.models.User;
+import com.example.expensesharing.repositories.GroupRepository;
 import com.example.expensesharing.repositories.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 public class UserService {
+    private final GroupRepository groupRepository;
     private UserRepository userRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, GroupRepository groupRepository) {
 
         this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
     }
 
     public User signup(String name, String email, String password, String phone) {
@@ -179,4 +185,6 @@ public class UserService {
         User user = optionalUser.get();
         return user;
     }
+
+
 }

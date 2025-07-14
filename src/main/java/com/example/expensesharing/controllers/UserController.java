@@ -1,17 +1,23 @@
 package com.example.expensesharing.controllers;
 
 import com.example.expensesharing.dtos.*;
+import com.example.expensesharing.models.Group;
 import com.example.expensesharing.models.User;
+import com.example.expensesharing.services.GroupService;
 import com.example.expensesharing.services.UserService;
 import org.springframework.stereotype.Controller;
 
+import java.util.List;
+
 @Controller
 public class UserController {
+    private final GroupService groupService;
     private UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, GroupService groupService) {
 
         this.userService = userService;
+        this.groupService = groupService;
     }
 
     public UserLoginResponseDto login(UserLoginRequestDto loginRequestDto)  {
@@ -117,5 +123,4 @@ public class UserController {
 
         return responseDto;
     }
-
 }

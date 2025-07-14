@@ -73,7 +73,8 @@ public class ExpenseController {
         ExpenseHistoryResponseDto expenseHistoryResponseDto = new ExpenseHistoryResponseDto();
 
         try{
-            List<Expense> expenses = expenseService.getExpenseHistory(expenseHistoryRequestDto.getGroupName());
+            List<Expense> expenses = expenseService.getExpenseHistory(expenseHistoryRequestDto.getUserEmail(),
+                    expenseHistoryRequestDto.getGroupName());
 
             expenseHistoryResponseDto.setExpenses(expenses);
             expenseHistoryResponseDto.setResponseStatus(ResponseStatus.SUCCESS);

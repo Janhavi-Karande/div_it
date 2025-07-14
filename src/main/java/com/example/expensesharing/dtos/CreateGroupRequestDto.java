@@ -9,10 +9,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@Controller
+
 public class CreateGroupRequestDto {
     private String groupName;
     private String description;
-    private List<User> members;
-    private User admin;
+    private String adminEmail;
 }

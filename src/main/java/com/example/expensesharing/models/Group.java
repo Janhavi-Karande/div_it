@@ -1,9 +1,6 @@
 package com.example.expensesharing.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,7 +15,7 @@ public class Group extends BaseModel {
     @OneToMany
     private List<Expense> expenses;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<User> members;
 
     @ManyToOne

@@ -3,9 +3,10 @@ package com.example.expensesharing.dtos;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
-public class ExpenseHistoryRequestDto {
+@Setter
+public class AddRemoveMemberGroupRequestDto {
     private String groupName;
     private String userEmail;
+    private String adminEmail;
 }

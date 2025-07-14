@@ -1,13 +1,15 @@
 package com.example.expensesharing.dtos;
 
 import com.example.expensesharing.models.Group;
+import com.example.expensesharing.models.User;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Controller;
+
+import java.util.List;
 
 @Getter
 @Setter
-public class CreateGroupResponseDto {
-    private Group group;
+public class GetGroupsResponseDto {
+    private List<Group> groups;
     private ResponseStatus responseStatus;
 }

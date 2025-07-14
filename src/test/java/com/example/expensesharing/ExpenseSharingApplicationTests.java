@@ -4,10 +4,7 @@ import com.example.expensesharing.controllers.ExpenseController;
 import com.example.expensesharing.controllers.GroupController;
 import com.example.expensesharing.controllers.UserController;
 import com.example.expensesharing.dtos.*;
-import com.example.expensesharing.models.Expense;
-import com.example.expensesharing.models.ExpenseType;
-import com.example.expensesharing.models.User;
-import com.example.expensesharing.models.UserExpenseType;
+import com.example.expensesharing.models.*;
 import com.example.expensesharing.services.UserService;
 import org.junit.jupiter.api.AutoClose;
 import org.junit.jupiter.api.Test;
@@ -98,22 +95,9 @@ class ExpenseSharingApplicationTests {
 	@Test
 	void testCreateGroup(){
 		CreateGroupRequestDto createGroupRequestDto = new CreateGroupRequestDto();
+
 		createGroupRequestDto.setGroupName("Roommates");
-		User user = new User();
-		user.setEmail("meerajoshi@gmail.com");
-		createGroupRequestDto.setAdmin(user);
-
-		List<User> members = new ArrayList<>();
-		User userMember1 = new User();
-		userMember1.setEmail("rohinipillai@gmail.com");
-
-		User userMember2 = new User();
-		userMember2.setEmail("parthvyas24@gmail.com");
-
-		members.add(userMember1);
-		members.add(userMember2);
-
-		createGroupRequestDto.setMembers(members);
+		createGroupRequestDto.setAdminEmail("meerajoshi@gmail.com");
 
 		CreateGroupResponseDto createGroupResponseDto = groupController.createGroup(createGroupRequestDto);
 
@@ -220,6 +204,84 @@ class ExpenseSharingApplicationTests {
 		}
 		else{
 			System.out.println("Expense history is not successful.");
+		}
+	}
+
+	@Test
+	void testAddMember(){
+		AddRemoveMemberGroupRequestDto requestDto = new AddRemoveMemberGroupRequestDto();
+
+		requestDto.setUserEmail("rishijain@gmail.com");
+		requestDto.setGroupName("Roommates");
+
+		AddRemoveMemberGroupResponseDto responseDto = groupController.addMember(requestDto);
+
+		if(responseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			System.out.println("Member is added successfully.");
+			List<User> members = responseDto.getMembers();
+			System.out.println("New count of members = "+ members.size());
+		}
+		else{
+			System.out.println("Member is not added.");
+		}
+	}
+
+	@Test
+	void testRemoveMember(){
+		AddRemoveMemberGroupRequestDto requestDto = new AddRemoveMemberGroupRequestDto();
+
+		requestDto.setUserEmail("rishijain@gmail.com");
+		requestDto.setGroupName("Roommates");
+
+		AddRemoveMemberGroupResponseDto responseDto = groupController.removeMember(requestDto);
+
+		if(responseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			System.out.println("Member is removed successfully.");
+			List<User> members = responseDto.getMembers();
+			System.out.println("New count of members = "+ members.size());
+
+		}
+		else{
+			System.out.println("Member is not removed.");
+		}
+	}
+
+	@Test
+	void testGetMembers(){
+
+		AddRemoveMemberGroupRequestDto requestDto = new AddRemoveMemberGroupRequestDto();
+		requestDto.setGroupName("Roommates");
+
+		AddRemoveMemberGroupResponseDto responseDto = groupController.getAllMembers(requestDto);
+
+		if(responseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			List<User> members = responseDto.getMembers();
+			for(User user: members){
+				System.out.println(user.getName());
+			}
+
+		}
+		else{
+			System.out.println("Get all members failed.");
+		}
+	}
+
+	@Test
+	void testGetAllGroups(){
+
+		GetGroupsRequestDto requestDto = new GetGroupsRequestDto();
+
+		requestDto.setUserEmail("parthvyas24@gmail.com");
+		GetGroupsResponseDto responseDto = groupController.getAllGroups(requestDto);
+
+		if(responseDto.getResponseStatus().equals(ResponseStatus.SUCCESS)){
+			List<Group> groups = responseDto.getGroups();
+			for(Group group: groups){
+				System.out.println(group.getName());
+			}
+		}
+		else{
+			System.out.println("Get all groups failed.");
 		}
 	}
 }
